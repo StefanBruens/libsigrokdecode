@@ -215,8 +215,11 @@ class Decoder(srd.Decoder):
             self.putx([proto[cmd][0], w])
             self.ss, self.es = self.ss_byte, self.samplenum
 
-        self.putx([proto[cmd][0], ['%s: %02X' % (proto[cmd][1], d),
-                   '%s: %02X' % (proto[cmd][2], d), '%02X' % d]])
+        asc = ""
+        if cmd.startswith('DATA') and chr(d).isprintable():
+            asc = " '{}'".format(chr(d))
+        self.putx([proto[cmd][0], ['%s: %02X%s' % (proto[cmd][1], d, asc),
+                   '%s: %02X%s' % (proto[cmd][2], d, asc), '%02X' % d]])
 
         # Done with this packet.
         self.bitcount = self.databyte = 0
